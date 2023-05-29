@@ -9,8 +9,10 @@ const char* password = "YOUR_PASSWORD";
 WebServer server(80);
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C display(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/ 21);
 
-const int canvasWidth = 128;
-const int canvasHeight = 64;
+const int screenWidth = 128;  // Adjust the screen width
+const int screenHeight = 64;  // Adjust the screen height
+const int canvasWidth = screenWidth * 2;  // Double the canvas width
+const int canvasHeight = screenHeight * 2;  // Double the canvas height
 
 bool canvas[canvasWidth][canvasHeight];
 
@@ -18,7 +20,7 @@ void handleRoot() {
   String html = "<html><body><h1>ESP32 Canvas</h1>";
   html += "<p>Click and drag on the canvas to draw.</p>";
   html += "<button onclick='clearCanvas()'>Clear</button>";
-  html += "<canvas id='canvas' width='128' height='64' style='border:1px solid black'></canvas>";
+  html += "<canvas id='canvas' width='" + String(screenWidth) + "' height='" + String(screenHeight) + "' style='border:1px solid black'></canvas>";
   html += "<script>";
   html += "var canvas = document.getElementById('canvas');";
   html += "var ctx = canvas.getContext('2d');";
@@ -31,8 +33,8 @@ void handleRoot() {
   html += "function draw(e) {";
   html += "  if (!isDrawing) return;";
   html += "  var rect = canvas.getBoundingClientRect();";
-  html += "  var x = Math.floor((e.clientX - rect.left) / 2) - 1;";  // Adjust X offset
-  html += "  var y = Math.floor((e.clientY - rect.top) / 2) - 1;";  // Adjust Y offset
+  html += "  var x = Math.floor((e.clientX - rect.left) / rect.width * canvas.width) - 1;";  // Adjust X offset
+  html += "  var y = Math.floor((e.clientY - rect.top) / rect.height * canvas.height) - 1;";  // Adjust Y offset
   html += "  ctx.fillStyle = '#000000';";
   html += "  ctx.fillRect(x, y, 2, 2);";
   html += "  ctx.stroke();";
